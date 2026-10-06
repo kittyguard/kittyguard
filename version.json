@@ -1,0 +1,10 @@
+{
+  "latest_version": "6.4.0",
+  "version": "6.4.0",
+  "release_date": "2026-10-07",
+  "pkg": "DG-Source_6.4.0.zip",
+  "download_url": "DG-Security_6.4.0.zip",
+  "sha256": "023264F21C60A08DFCF25E5FE591F1DC10AB56CD6B2FD79457DBD859ED251CC3",
+  "size_bytes": 7129761,
+  "release_notes": "6.4.0 内容更新：自启动实时监控 + 扫描 IO 节流。"
+}
