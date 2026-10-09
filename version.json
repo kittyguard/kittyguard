@@ -2,9 +2,12 @@
   "latest_version": "6.4.1",
   "version": "6.4.1",
   "release_date": "2026-10-09",
-  "pkg": "DG-Source_6.4.1.zip",
-  "download_url": "DG-Security_6.4.1.zip",
-  "sha256": "645CAE55DCBFA1CC4DC80EC0DF94D4ED498D368C11DC777730A314172F20993F",
-  "size_bytes": 7339858,
-  "release_notes": "6.4.1 内容更新（移除 AI 助手聊天）：AI 聊天功能从工具页/托盘/设置全部移除，保留 AI 实时辅助。"
+  "release_notes": "6.4.1 内容更新（移除 AI 助手聊天）：AI 聊天功能从工具页/托盘/设置全部移除，保留 AI 实时辅助。",
+  "features": [
+    "移除 AI 助手聊天：工具页「AI 助手」卡片、托盘「打开 AI 聊天」入口、AI 助手聊天窗口与 AI 动作执行器全部移除——作为一个杀毒软件，对话式 AI 助手没必要保留，入口更干净",
+    "保留 AI 实时辅助：扫描后对高危/严重文件自动 AI 二次判断（AI 智能检查）与设置页隐藏 AI 配置区完整保留，杀毒判断能力不减",
+    "全程纯用户态、零驱动、不服务化、CPU≈0"
+  ],
+  "pkg": "https://github.com/kittyguard/kittyguard/releases/download/v6.4.1/DG-Security_6.4.1.zip",
+  "sha256": "78976033A2C6FDABEC38F5321CC3B7DFEB16C581CFAA2DEE3903231C9008C704"
 }
