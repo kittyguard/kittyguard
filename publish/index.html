@@ -199,7 +199,7 @@ footer{border-top:1px solid var(--line);padding:36px 0;font-size:13.5px;color:va
       <a href="#arch">技术架构</a>
       <a href="#history">版本历程</a>
     </div>
-    <a class="nav-cta" href="https://github.com/kittyguard/kittyguard/releases/latest/download/DG-Security-Setup-6.4.0.exe" download>下载 DG</a>
+    <a class="nav-cta" href="DG-Security-Setup-6.4.1.exe" download>下载 DG</a>
     <button class="menu-btn" id="menuBtn" aria-label="菜单">菜单</button>
   </div>
 </nav>
@@ -213,8 +213,8 @@ footer{border-top:1px solid var(--line);padding:36px 0;font-size:13.5px;color:va
         <h1>纯用户态的守护，<br>也可以<span class="hl">很强</span></h1>
         <p class="sub">把 Windows 用户态权限用到极致：多引擎查杀、实时防护、行为链判定、勒索文档守护，全部在用户态完成 —— 不蓝屏、不绑架、不留负担。</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="https://github.com/kittyguard/kittyguard/releases/latest/download/DG-Security-Setup-6.4.0.exe" download>安装向导版（推荐）</a>
-          <a class="btn btn-ghost" href="https://github.com/kittyguard/kittyguard/releases/latest/download/DG-Security_6.4.0.zip" download>便携版（免安装）</a>
+          <a class="btn btn-primary" href="DG-Security-Setup-6.4.1.exe" download>安装向导版（推荐）</a>
+          <a class="btn btn-ghost" href="DG-Security_6.4.1.zip" download>便携版（免安装）</a>
         </div>
         <div class="hero-stats">
           <div class="stat"><div class="num">0</div><div class="lbl">内核驱动</div></div>
@@ -229,7 +229,7 @@ footer{border-top:1px solid var(--line);padding:36px 0;font-size:13.5px;color:va
           <span class="term-title">DG-Security — engine console</span>
         </div>
         <div class="term-body" id="termBody">
-          <div><span class="t-mu">[00:00.001]</span> <span class="t-ac">DG 6.4.0</span> engine starting…</div>
+          <div><span class="t-mu">[00:00.001]</span> <span class="t-ac">DG 6.4.1</span> engine starting…</div>
           <div><span class="t-mu">[00:00.012]</span> mode: <span class="t-ac">user-mode</span> (kernel driver: none)</div>
           <div><span class="t-mu">[00:00.021]</span> loading engines…</div>
           <div><span class="t-mu">[00:00.032]</span>   clamav        <span class="t-ok">✓</span> 9,000,000+ signatures</div>
@@ -513,9 +513,14 @@ footer{border-top:1px solid var(--line);padding:36px 0;font-size:13.5px;color:va
         <div class="tl-content"><h4><span class="ver">已发布</span>勒索守护防误伤</h4><p>试运行模式：只记录 + 备份、不冻结进程，先观察防误伤；排除目录管理：编译输出 / 游戏 / 虚拟机镜像等目录内批量改写不再告警，添加移除即时生效。</p></div>
       </div>
       <div class="tl-item">
+        <div class="tl-time">6.4.1</div>
+        <div class="tl-axis"><div class="tl-dot"></div></div>
+        <div class="tl-content"><h4><span class="ver">当前版</span>移除 AI 助手聊天 · 保留 AI 实时辅助</h4><p>AI 聊天功能（工具页「AI 助手」卡片、托盘「打开 AI 聊天」入口、AI 助手聊天窗口与 AI 动作执行器）全部移除——作为一个杀毒软件，对话式 AI 助手没必要保留，入口更干净。扫描后对高危/严重文件自动 AI 二次判断（AI 智能检查）与设置页隐藏 AI 配置区完整保留，杀毒判断能力不减。</p></div>
+      </div>
+      <div class="tl-item">
         <div class="tl-time">6.4.0</div>
         <div class="tl-axis"><div class="tl-dot"></div></div>
-        <div class="tl-content"><h4><span class="ver">当前版</span>自启动监控增强 · 扫描 IO 节流补齐 · ClamAV 双库龄</h4><p>自启动监控告警弹窗升级为三动作按钮：「立即禁用」一键把注册表值名/启动文件夹文件名加 DG_OFF_ 前缀（保留原值完全可逆，收集逻辑自动跳过，可在启动项管理恢复）；「加入忽略」把该启动项写入忽略列表持久化，此后新增不再提示；「稍后处理」本次不处置下次再提醒。扫描 IO 优先级 VERY_LOW 从主扫描线程扩展到生产者/消费者/应用巡检全部扫描线程——全盘扫描时所有 DG 磁盘读写统一让路，彻底不再拖卡鼠标/系统/游戏。规则中心病毒库状态改为 main 与 daily 双库龄分开显示，daily 超 7 天标「偏旧」不再混淆；一键更新病毒库完成后自动刷新统计并写日志。</p></div>
+        <div class="tl-content"><h4><span class="ver">已发布</span>自启动监控增强 · 扫描 IO 节流补齐 · ClamAV 双库龄</h4><p>自启动监控告警弹窗升级为三动作按钮：「立即禁用」一键把注册表值名/启动文件夹文件名加 DG_OFF_ 前缀（保留原值完全可逆，收集逻辑自动跳过，可在启动项管理恢复）；「加入忽略」把该启动项写入忽略列表持久化，此后新增不再提示；「稍后处理」本次不处置下次再提醒。扫描 IO 优先级 VERY_LOW 从主扫描线程扩展到生产者/消费者/应用巡检全部扫描线程——全盘扫描时所有 DG 磁盘读写统一让路，彻底不再拖卡鼠标/系统/游戏。规则中心病毒库状态改为 main 与 daily 双库龄分开显示，daily 超 7 天标「偏旧」不再混淆；一键更新病毒库完成后自动刷新统计并写日志。</p></div>
       </div>
 <div class="tl-item">
         <div class="tl-time">6.3.0</div>
@@ -558,10 +563,10 @@ footer{border-top:1px solid var(--line);padding:36px 0;font-size:13.5px;color:va
     <h2>给电脑一份「不添乱」的守护</h2>
     <p>纯用户态、轻量、可解释、能自愈。支持 Windows 10 / 11，安装即用，不绑架系统，不需要重启来回折腾。</p>
     <div class="hero-actions" style="justify-content:center;margin-bottom:0">
-      <a class="btn btn-primary" href="https://github.com/kittyguard/kittyguard/releases/latest/download/DG-Security-Setup-6.4.0.exe" download>安装向导版（推荐）</a>
-      <a class="btn btn-ghost" href="https://github.com/kittyguard/kittyguard/releases/latest/download/DG-Security_6.4.0.zip" download>便携版（免安装）</a>
+      <a class="btn btn-primary" href="DG-Security-Setup-6.4.1.exe" download>安装向导版（推荐）</a>
+      <a class="btn btn-ghost" href="DG-Security_6.4.1.zip" download>便携版（免安装）</a>
     </div>
-    <div class="cta-note">当前版本 6.4.0 · 纯用户态 · 零驱动 · 不服务化</div>
+    <div class="cta-note">当前版本 6.4.1 · 纯用户态 · 零驱动 · 不服务化</div>
   </div>
 </section>
 
