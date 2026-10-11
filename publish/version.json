@@ -1,13 +1,13 @@
 {
-  "latest_version": "6.4.1",
-  "version": "6.4.1",
-  "release_date": "2026-10-09",
-  "release_notes": "6.4.1 内容更新（移除 AI 助手聊天）：AI 聊天功能从工具页/托盘/设置全部移除，保留 AI 实时辅助。",
+  "latest_version": "6.4.2",
+  "version": "6.4.2",
+  "release_date": "2026-10-11",
+  "release_notes": "6.4.2 修复版：修复实时防护误隔离便携版 _internal 运行时 DLL（api-ms-win-core-*）导致便携版启动闪退的问题，DG 自身目录全面豁免（任意安装位置的 DG安全/desktopguard/kittyguard 目录不再参与实时防护与目录监控）。",
   "features": [
-    "移除 AI 助手聊天：工具页「AI 助手」卡片、托盘「打开 AI 聊天」入口、AI 助手聊天窗口与 AI 动作执行器全部移除——作为一个杀毒软件，对话式 AI 助手没必要保留，入口更干净",
-    "保留 AI 实时辅助：扫描后对高危/严重文件自动 AI 二次判断（AI 智能检查）与设置页隐藏 AI 配置区完整保留，杀毒判断能力不减",
-    "全程纯用户态、零驱动、不服务化、CPU≈0"
+    "修复：实时防护不再隔离 DG 自身文件——_is_self_path 扩展识别任意 DG安全/desktopguard/kittyguard 便携目录，文件事件入口（单文件告警/批量落盘告警/目录监控）统一豁免自身文件",
+    "修复：被误隔离的 5 个 api-ms-win-core-*.dll 运行时 DLL 已还原到便携版 _internal 目录",
+    "保持纯用户态、零驱动、不服务化、CPU≈0"
   ],
-  "pkg": "https://github.com/kittyguard/kittyguard/releases/download/v6.4.1/DG-Security_6.4.1.zip",
-  "sha256": "D8283EF3BF4BAFC41A68415ACDE3C582C5F4D4DE9A1C7EF626AF935339932FB0"
+  "pkg": "https://github.com/kittyguard/kittyguard/releases/download/v6.4.2/DG-Security_6.4.2.zip",
+  "sha256": "E0A3B8785B186BB6DCCEA24D9300BFE5CF344813E753C68F0978A6B12BB6D9AC"
 }
