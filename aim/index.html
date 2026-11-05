@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>DG Aim Trainer - 练枪</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+  body { overflow: hidden; font-family: 'Consolas', 'Courier New', monospace; background: #87CEEB; }
+
+  .overlay {
+    position: fixed; inset: 0; z-index: 20;
+    background: rgba(10, 15, 25, 0.85);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .overlay h1 { font-size: 48px; color: #0f0; text-shadow: 0 0 20px #0f0; margin-bottom: 10px; letter-spacing: 4px; }
+  .overlay p { font-size: 16px; color: #aaa; margin-bottom: 8px; line-height: 1.8; }
+  .btn {
+    margin-top: 20px; padding: 16px 50px; font-size: 20px; cursor: pointer;
+    background: #0f0; color: #000; border: none; border-radius: 6px;
+    font-family: inherit; font-weight: bold; letter-spacing: 2px;
+    transition: transform .1s, box-shadow .1s;
+  }
+  .btn:hover { transform: scale(1.05); box-shadow: 0 0 30px #0f0; }
+  .stats { font-size: 18px; color: #0f0; line-height: 2; text-align: left; margin: 15px 0; }
+  .stats b { color: #ff0; }
+
+  #hud { position: fixed; top: 15px; left: 20px; z-index: 10; color: #fff;
+         font-size: 18px; text-shadow: 0 0 4px #000; line-height: 1.7; }
+  #hud .big-score { font-size: 32px; color: #ff0; text-shadow: 0 0 8px #000; }
+  #timer { position: fixed; top: 15px; right: 20px; z-index: 10; color: #fff;
+           font-size: 36px; text-shadow: 0 0 6px #000; }
+  #timer.low { color: #f33; animation: blink 0.5s infinite; }
+  @keyframes blink { 50% { opacity: 0.3; } }
+  #crosshair { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+               z-index: 10; pointer-events: none; color: #ff0; font-size: 26px; font-weight: bold;
+               text-shadow: 0 0 3px #000; transition: transform .05s; }
+  #crosshair.hit { color: #f33; transform: translate(-50%,-50%) scale(1.5); }
+  #combo { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+           z-index: 10; color: #f80; font-size: 24px; text-shadow: 0 0 6px #000; opacity: 0;
+           transition: opacity .3s; }
+  #help { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+          z-index: 10; color: #fff; font-size: 13px; text-shadow: 0 0 3px #000; opacity: 0.7; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="menu" class="overlay">
+  <h1>DG AIM TRAINER</h1>
+  <p>60 秒限时 · 打红方块 · 越小分越高 · 靶子会动</p>
+  <p>WASD 移动 · 鼠标转视角 · 左键射击 · Esc 暂停</p>
+  <p style="color:#888; margin-top:10px;">最高分: <span id="bestScore">0</span></p>
+  <button class="btn" id="startBtn">开 始</button>
+</div>
+
+<div id="gameover" class="overlay hidden">
+  <h1 style="color:#f80;">时间到！</h1>
+  <div class="stats">
+    得分: <b id="finalScore">0</b><br>
+    命中: <b id="finalHits">0</b> / <b id="finalShots">0</b><br>
+    命中率: <b id="finalAcc">0%</b><br>
+    最高连杀: <b id="finalCombo">0</b><br>
+    历史最高: <b id="finalBest">0</b>
+  </div>
+  <button class="btn" id="retryBtn">再来一局</button>
+</div>
+
+<div id="hud">
+  <div class="big-score">分数: <span id="score">0</span></div>
+  命中: <span id="hits">0</span> · 射击: <span id="shots">0</span><br>
+  命中率: <span id="acc">0%</span>
+</div>
+<div id="timer">60.0</div>
+<div id="crosshair">+</div>
+<div id="combo"></div>
+<div id="help">WASD 走 · 左键打 · 小靶子 3 分 / 中 2 分 / 大 1 分</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+let scene, camera, renderer, controls;
+let targets = [];
+let score = 0, hits = 0, shots = 0, combo = 0, maxCombo = 0;
+let timeLeft = 60;
+let playing = false;
+let lastShotTime = 0;
+const keys = {};
+const GAME_DURATION = 60;
+const BEST_KEY = 'dg_aim_best';
+
+let audioCtx;
+function beep(freq, dur, type='square', vol=0.15) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch(e){}
+}
+const sndShoot = () => beep(180, 0.08, 'square', 0.1);
+const sndHit   = () => beep(880, 0.12, 'sine', 0.2);
+const sndMiss  = () => beep(90, 0.06, 'sawtooth', 0.08);
+
+function initScene() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x87CEEB);
+  scene.fog = new THREE.Fog(0x87CEEB, 30, 80);
+
+  camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 200);
+  camera.position.set(0, 1.7, 10);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.shadowMap.enabled = true;
+  document.body.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.1);
+  sun.position.set(10, 20, 5); sun.castShadow = true;
+  scene.add(sun);
+
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(100, 100),
+    new THREE.MeshStandardMaterial({ color: 0x4a7c4a }));
+  ground.rotation.x = -Math.PI/2; ground.receiveShadow = true;
+  scene.add(ground);
+  const grid = new THREE.GridHelper(100, 50, 0x333, 0x555);
+  grid.position.y = 0.02; scene.add(grid);
+
+  for (let i = 0; i < 6; i++) {
+    const pillar = new THREE.Mesh(
+      new THREE.BoxGeometry(0.6, 3, 0.6),
+      new THREE.MeshStandardMaterial({ color: 0x888 }));
+    pillar.position.set((Math.random()-0.5)*30, 1.5, -8 - Math.random()*25);
+    pillar.castShadow = true;
+    scene.add(pillar);
+  }
+
+  controls = new PointerLockControls(camera, document.body);
+  const menu = document.getElementById('menu');
+  document.getElementById('startBtn').onclick = () => controls.lock();
+  document.getElementById('retryBtn').onclick = () => controls.lock();
+  controls.addEventListener('lock', () => {
+    menu.classList.add('hidden');
+    document.getElementById('gameover').classList.add('hidden');
+    if (!playing) startGame();
+  });
+  controls.addEventListener('unlock', () => {
+    if (playing) endGame();
+  });
+
+  addEventListener('keydown', e => keys[e.code] = true);
+  addEventListener('keyup', e => keys[e.code] = false);
+  addEventListener('mousedown', e => {
+    if (controls.isLocked && e.button === 0) shoot();
+  });
+  addEventListener('resize', () => {
+    camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+
+  document.getElementById('bestScore').textContent = localStorage.getItem(BEST_KEY) || 0;
+  animate();
+}
+
+function spawnTarget() {
+  const r = Math.random();
+  let size, pts;
+  if (r < 0.33) { size = 1.0; pts = 3; }
+  else if (r < 0.66) { size = 1.6; pts = 2; }
+  else { size = 2.4; pts = 1; }
+  const geo = new THREE.BoxGeometry(size, size, size);
+  const mat = new THREE.MeshStandardMaterial({ color: 0xcc2222 });
+  const t = new THREE.Mesh(geo, mat);
+  t.position.set((Math.random()-0.5)*24, 1.5, -5 - Math.random()*25);
+  t.castShadow = true;
+  t.userData = { pts, vx: (Math.random()-0.5)*0.04, born: Date.now() };
+  scene.add(t);
+  targets.push(t);
+}
+
+function shoot() {
+  const now = performance.now();
+  if (now - lastShotTime < 180) return;
+  lastShotTime = now;
+  shots++; sndShoot();
+  const ray = new THREE.Raycaster();
+  ray.setFromCamera(new THREE.Vector2(0, 0), camera);
+  const hits3d = ray.intersectObjects(targets);
+  if (hits3d.length > 0) {
+    const hit = hits3d[0].object;
+    hits++; combo++; maxCombo = Math.max(maxCombo, combo);
+    score += hit.userData.pts;
+    sndHit();
+    flashCrosshair();
+    if (combo >= 2) showCombo(combo);
+    scene.remove(hit);
+    targets = targets.filter(t => t !== hit);
+    setTimeout(spawnTarget, 200);
+  } else {
+    combo = 0; sndMiss();
+  }
+  updateHUD();
+}
+
+function flashCrosshair() {
+  const c = document.getElementById('crosshair');
+  c.classList.add('hit');
+  setTimeout(() => c.classList.remove('hit'), 100);
+}
+function showCombo(n) {
+  const el = document.getElementById('combo');
+  el.textContent = n + ' 连杀!';
+  el.style.opacity = 1;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.style.opacity = 0, 600);
+}
+function updateHUD() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('hits').textContent = hits;
+  document.getElementById('shots').textContent = shots;
+  document.getElementById('acc').textContent = shots ? Math.round(hits/shots*100) + '%' : '0%';
+}
+
+function startGame() {
+  playing = true;
+  score = 0; hits = 0; shots = 0; combo = 0; maxCombo = 0;
+  timeLeft = GAME_DURATION;
+  targets.forEach(t => scene.remove(t)); targets = [];
+  for (let i = 0; i < 6; i++) spawnTarget();
+  updateHUD();
+}
+function endGame() {
+  playing = false;
+  targets.forEach(t => scene.remove(t)); targets = [];
+  const best = Math.max(parseInt(localStorage.getItem(BEST_KEY)||0), score);
+  localStorage.setItem(BEST_KEY, best);
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('finalHits').textContent = hits;
+  document.getElementById('finalShots').textContent = shots;
+  document.getElementById('finalAcc').textContent = (shots?Math.round(hits/shots*100):0) + '%';
+  document.getElementById('finalCombo').textContent = maxCombo;
+  document.getElementById('finalBest').textContent = best;
+  document.getElementById('gameover').classList.remove('hidden');
+}
+
+let lastTime = performance.now();
+function animate() {
+  requestAnimationFrame(animate);
+  const now = performance.now();
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+  if (playing) {
+    timeLeft -= dt;
+    if (timeLeft <= 0) {
+      timeLeft = 0; endGame(); controls.unlock();
+    }
+    const tEl = document.getElementById('timer');
+    tEl.textContent = timeLeft.toFixed(1);
+    tEl.classList.toggle('low', timeLeft < 10);
+    const speed = 0.18;
+    if (keys['KeyW']) controls.moveForward(speed);
+    if (keys['KeyS']) controls.moveForward(-speed);
+    if (keys['KeyA']) controls.moveRight(-speed);
+    if (keys['KeyD']) controls.moveRight(speed);
+    targets.forEach(t => {
+      t.position.x += t.userData.vx;
+      if (Math.abs(t.position.x) > 14) t.userData.vx *= -1;
+      const s = 1 + Math.sin((now - t.userData.born)/300) * 0.05;
+      t.scale.set(s, s, s);
+    });
+  }
+  renderer.render(scene, camera);
+}
+initScene();
+</script>
+</body>
+</html>

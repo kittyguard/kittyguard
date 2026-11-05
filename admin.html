@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理后台 · DG 安全</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%233b82f6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M32 4 54 13v16c0 15-9.5 26-22 31C19 55 10 44 10 29V13z' fill='url(%23g)'/%3E%3Cpath d='M24 32l6 6 11-12' stroke='%230b1322' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link href="https://miaoda.feishu.cn/fonts/css2?family=Rajdhani:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1322;--bg-2:#0e1a2e;--surface:#111e36;--surface-2:#16263f;--line:#1e3050;
+  --text:#e5edf8;--muted:#8ca3c0;--accent:#22d3ee;--accent-2:#3b82f6;
+  --ok:#34d399;--warn:#fbbf24;--danger:#f87171;--radius:14px;
+  --font-body:"Noto Sans SC",system-ui,sans-serif;--font-display:"Rajdhani","Noto Sans SC",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.7;min-height:100vh}
+.container{max-width:1200px;margin:0 auto;padding:32px 24px}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.top-bar h1{font-size:24px;font-weight:900;display:flex;align-items:center;gap:10px}
+.top-bar .logout{color:var(--muted);font-size:13px;cursor:pointer}
+.top-bar .logout:hover{color:var(--danger)}
+.login-box{max-width:400px;margin:120px auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:36px}
+.login-box h1{font-size:20px;font-weight:900;text-align:center;margin-bottom:24px}
+input,select,textarea{width:100%;padding:11px 14px;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+.login-box input{margin-bottom:16px}
+.btn{padding:11px 22px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#081120}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.stat-card .num{font-family:var(--font-display);font-size:32px;font-weight:700;line-height:1.1}
+.stat-card .label{font-size:13px;color:var(--muted);margin-top:4px}
+.stat-card.total .num{color:var(--accent)}
+.stat-card.pending .num{color:var(--warn)}
+.stat-card.processing .num{color:var(--accent-2)}
+.stat-card.fixed .num{color:var(--ok)}
+.toolbar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.toolbar select,.toolbar input.search{width:auto;flex:0 0 auto}
+.toolbar input.search{flex:1;min-width:200px}
+.table-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th,td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--line);font-size:13px}
+th{background:var(--surface-2);font-weight:600;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+tr:hover{background:rgba(34,211,238,.03);cursor:pointer}
+tr:last-child td{border-bottom:none}
+.tag{padding:3px 10px;border-radius:6px;font-size:12px;font-weight:600;display:inline-block}
+.tag-bug{background:rgba(248,113,113,.15);color:var(--danger)}
+.tag-fp{background:rgba(251,191,36,.15);color:var(--warn)}
+.tag-feature{background:rgba(59,130,246,.15);color:var(--accent-2)}
+.tag-other{background:rgba(140,163,192,.15);color:var(--muted)}
+.status{padding:3px 10px;border-radius:6px;font-size:12px;font-weight:600;display:inline-block}
+.status-pending{background:rgba(251,191,36,.15);color:var(--warn)}
+.status-processing{background:rgba(34,211,238,.15);color:var(--accent)}
+.status-fixed{background:rgba(52,211,153,.15);color:var(--ok)}
+.status-ignored{background:rgba(140,163,192,.15);color:var(--muted)}
+.content-preview{max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);width:100%;max-width:640px;max-height:90vh;overflow-y:auto;padding:28px}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.modal .close{cursor:pointer;color:var(--muted);font-size:20px}
+.modal .field{margin-bottom:16px}
+.modal .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.modal .field .val{font-size:14px;color:var(--text)}
+.modal .field .content-val{background:var(--bg-2);padding:12px;border-radius:8px;line-height:1.6}
+.modal .actions{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+@media(max-width:768px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="login-box" id="loginPage">
+    <h1>🔐 DG 管理后台</h1>
+    <input type="password" id="adminPwd" placeholder="管理员密码（qwer12345）" style="margin-bottom:12px">
+    <input type="password" id="adminToken" placeholder="GitHub Token（第一次输，之后自动记住）" onkeydown="if(event.key==='Enter')login()">
+    <button class="btn btn-primary" style="width:100%" onclick="login()">进入后台</button>
+  </div>
+  <div id="adminPage" style="display:none">
+    <div class="top-bar">
+      <h1>📋 反馈工单管理</h1>
+      <span class="logout" onclick="logout()">退出登录</span>
+    </div>
+    <div class="stats">
+      <div class="stat-card total"><div class="num" id="statTotal">0</div><div class="label">总反馈数</div></div>
+      <div class="stat-card pending"><div class="num" id="statPending">0</div><div class="label">待处理</div></div>
+      <div class="stat-card processing"><div class="num" id="statProcessing">0</div><div class="label">处理中</div></div>
+      <div class="stat-card fixed"><div class="num" id="statFixed">0</div><div class="label">已修复</div></div>
+    </div>
+    <div class="toolbar">
+      <select id="filterType" onchange="renderList()">
+        <option value="">全部分类</option><option value="bug">Bug 上报</option><option value="false_positive">误报上报</option><option value="feature">功能建议</option><option value="other">其他</option>
+      </select>
+      <select id="filterStatus" onchange="renderList()">
+        <option value="">全部状态</option><option value="pending">待处理</option><option value="processing">处理中</option><option value="fixed">已修复</option><option value="ignored">已忽略</option>
+      </select>
+      <input class="search" id="searchKw" placeholder="搜索关键词..." oninput="renderList()">
+      <button class="btn btn-ghost" onclick="exportCSV()">导出 CSV</button>
+    </div>
+    <div class="table-card">
+      <table><thead><tr><th>ID</th><th>分类</th><th>内容</th><th>提交时间</th><th>提交人</th><th>状态</th></tr></thead><tbody id="ticketList"></tbody></table>
+    </div>
+  </div>
+</div>
+<div class="modal-mask" id="ticketModal">
+  <div class="modal">
+    <h3>工单详情 <span class="close" onclick="closeModal()">×</span></h3>
+    <div class="field"><label>分类</label><div class="val" id="mType"></div></div>
+    <div class="field"><label>提交内容</label><div class="val content-val" id="mContent"></div></div>
+    <div class="field"><label>提交时间</label><div class="val" id="mTime"></div></div>
+    <div class="field"><label>提交人</label><div class="val" id="mUser"></div></div>
+    <div class="field"><label>当前状态</label><select id="mStatus"><option value="pending">待处理</option><option value="processing">处理中</option><option value="fixed">已修复</option><option value="ignored">已忽略</option></select></div>
+    <div class="field"><label>内部备注</label><textarea id="mNote" rows="3" placeholder="比如：该样本哈希已加入黑名单，6.6.1版本修复"></textarea></div>
+    <div class="actions"><button class="btn btn-primary" onclick="saveTicket()">保存修改</button><button class="btn btn-ghost" onclick="closeModal()">关闭</button></div>
+  </div>
+</div>
+<script>
+const ADMIN_PWD = "qwer12345";
+let tickets = [];
+let ghToken = localStorage.getItem('dg_admin_gh_token');
+let currentTicketId = null;
+function login(){
+  const pwd=document.getElementById('adminPwd').value;
+  if(pwd===ADMIN_PWD){
+    if(!ghToken){
+      ghToken = document.getElementById('adminToken').value.trim();
+      localStorage.setItem('dg_admin_gh_token', ghToken);
+    }
+    if(!ghToken){alert('请输入GitHub Token');return}
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('adminPage').style.display='block';
+    loadTickets();
+  } else alert('密码错误');
+}
+async function loadTickets(){
+  const res = await fetch('https://api.github.com/repos/kittyguard/kittyguard/issues?state=all&per_page=100', {headers:{Authorization:`token ${ghToken}`}});
+  const issues = await res.json();
+  tickets = issues.filter(i=>!i.pull_request).map(i=>{
+    let type = 'other';
+    if(i.title.includes('[Bug上报]')) type='bug';
+    if(i.title.includes('[误报上报]')) type='false_positive';
+    if(i.title.includes('[功能建议]')) type='feature';
+    return {
+      id:i.number, type:type, content:i.body,
+      time:new Date(i.created_at).toLocaleString(),
+      user:i.user.login, status: i.state==='open'?'pending':'fixed',
+      note:''
+    };
+  });
+  renderStats(); renderList();
+}
+function logout(){localStorage.removeItem('dg_admin_gh_token');ghToken=null;document.getElementById('adminPage').style.display='none';document.getElementById('loginPage').style.display='block';document.getElementById('adminPwd').value='';}
+function renderStats(){document.getElementById('statTotal').textContent=tickets.length;document.getElementById('statPending').textContent=tickets.filter(t=>t.status==='pending').length;document.getElementById('statProcessing').textContent=tickets.filter(t=>t.status==='processing').length;document.getElementById('statFixed').textContent=tickets.filter(t=>t.status==='fixed').length;}
+function renderList(){const type=document.getElementById('filterType').value,status=document.getElementById('filterStatus').value,kw=document.getElementById('searchKw').value.toLowerCase();let filtered=tickets.filter(t=>{if(type&&t.type!==type)return false;if(status&&t.status!==status)return false;if(kw&&!t.content.toLowerCase().includes(kw))return false;return true;});const typeName={bug:"Bug",false_positive:"误报",feature:"建议",other:"其他"},statusName={pending:"待处理",processing:"处理中",fixed:"已修复",ignored:"已忽略"};let html="";filtered.forEach(t=>{html+=`<tr onclick="openDetail(${t.id})"><td>#${t.id}</td><td><span class="tag tag-${t.type}">${typeName[t.type]}</span></td><td><div class="content-preview">${t.content}</div></td><td>${t.time}</td><td>${t.user}</td><td><span class="status status-${t.status}">${statusName[t.status]}</span></td></tr>`;});if(!filtered.length)html=`<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px">暂无匹配工单</td></tr>`;document.getElementById('ticketList').innerHTML=html;}
+function openDetail(id){currentTicketId=id;const t=tickets.find(x=>x.id===id);const typeName={bug:"Bug上报",false_positive:"误报上报",feature:"功能建议",other:"其他"};document.getElementById('mType').textContent=typeName[t.type];document.getElementById('mContent').textContent=t.content;document.getElementById('mTime').textContent=t.time;document.getElementById('mUser').textContent=t.user;document.getElementById('mStatus').value=t.status;document.getElementById('mNote').value="";document.getElementById('ticketModal').style.display='flex';}
+function closeModal(){document.getElementById('ticketModal').style.display='none';currentTicketId=null;}
+async function saveTicket(){
+  const replyText = document.getElementById('mNote').value;
+  if(replyText){
+    await fetch(`https://api.github.com/repos/kittyguard/kittyguard/issues/${currentTicketId}/comments`, {
+      method:'POST', headers:{Authorization:`token ${ghToken}`,'Content-Type':'application/json'},
+      body:JSON.stringify({body:replyText})
+    });
+  }
+  closeModal(); loadTickets(); alert('回复已发送给用户');
+}
+function exportCSV(){const header="ID,分类,内容,提交时间,提交人,状态\n";const rows=tickets.map(t=>`${t.id},${t.type},"${t.content.replace(/"/g,'""')}",${t.time},${t.user},${t.status}`).join("\n");const blob=new Blob(["\ufeff"+header+rows],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="DG反馈工单.csv";a.click();}
+</script>
+</body>
+</html>

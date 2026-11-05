@@ -1,0 +1,18 @@
+{
+  "latest_version": "6.5.0",
+  "version": "6.5.0",
+  "release_date": "2026-10-11",
+  "release_notes": "6.5.0 内容更新（检测分层总览·敏感设置篡改监控·DLL注入监控）：1.【防护中心检测分层总览】防护中心新增「检测分层」区——黑名单哈希 / ClamAV / YARA / PE 启发式 / 本地 ML / 签名缓存 / 云查 7 层检测资产逐层显示实时规模与启用状态，一眼看全全部检测能力（与规则中心联动刷新）；2.【敏感设置篡改监控】新增独立防线——每 8 秒快照对比 UAC 开关 / 防火墙 / Defender / 代理 / SMBv1 / hosts 文件等关键安全设置，发现被外部程序改动立即写防护日志 + 弹窗告警（免打扰静默记录）；3.【DLL 注入/非法模块监控】每 8 秒枚举系统关键进程已加载模块——检测系统进程加载非系统目录 DLL（DLL 注入特征）、从 Temp/AppData/Downloads 可写目录加载的模块、伪装系统文件名模块；可信软件目录（WPS/腾讯/百度等正常 shell 扩展）自动豁免、explorer 未知扩展仅记录不弹窗，纯用户态可捕获常见注入/劫持手法；4.【设置开关】设置-实时防护新增「敏感设置监控」与「DLL 注入监控」开关（默认开启，配置持久化）；5.全程纯用户态、零驱动、不服务化、CPU≈0",
+  "features": [
+    "防护中心检测分层总览：7 层检测资产（黑名单哈希/ClamAV/YARA/PE 启发式/本地 ML/签名缓存/云查）逐层显示实时规模与启用状态",
+    "敏感设置篡改监控：每 8 秒快照对比 UAC/防火墙/Defender/代理/SMBv1/hosts，外部程序改动立即日志+弹窗告警（免打扰联动）",
+    "DLL 注入/非法模块监控：关键进程加载非系统目录/可写目录/伪装系统名模块即告警；可信软件扩展豁免、explorer 未知扩展仅记录",
+    "设置-实时防护新增两个监控开关（默认开启，配置持久化）",
+    "全程纯用户态、零驱动、不服务化、CPU≈0"
+  ],
+  "pkg_gh": "https://github.com/kittyguard/kittyguard/releases/download/v6.5.0/DG-Security_6.5.0.zip",
+  "pkg_gt": "https://gitee.com/kittyguard/kittyguard/releases/download/v6.5.0/DG-Security_6.5.0.zip",
+  "setup_gh": "https://github.com/kittyguard/kittyguard/releases/download/v6.5.0/DG-Security-Setup-6.5.0.exe",
+  "setup_gt": "https://gitee.com/kittyguard/kittyguard/releases/download/v6.5.0/DG-Security-Setup-6.5.0.exe",
+  "sha256": "CD29CC981A467956FF23DBD41115D7F60A454F9F08C9ADDB85C3787FEFECDADA"
+}

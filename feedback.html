@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈建议 · DG 安全</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%233b82f6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M32 4 54 13v16c0 15-9.5 26-22 31C19 55 10 44 10 29V13z' fill='url(%23g)'/%3E%3Cpath d='M24 32l6 6 11-12' stroke='%230b1322' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link href="https://miaoda.feishu.cn/fonts/css2?family=Rajdhani:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1322;--bg-2:#0e1a2e;--surface:#111e36;--surface-2:#16263f;--line:#1e3050;
+  --text:#e5edf8;--muted:#8ca3c0;--accent:#22d3ee;--accent-2:#3b82f6;
+  --ok:#34d399;--warn:#fbbf24;--danger:#f87171;--radius:14px;
+  --font-body:"Noto Sans SC",system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.7;min-height:100vh}
+.container{max-width:720px;margin:0 auto;padding:40px 24px}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;margin-bottom:28px;font-size:14px}
+.back:hover{color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:32px}
+h1{font-size:26px;font-weight:900;margin-bottom:8px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:28px}
+.form-group{margin-bottom:20px}
+label{display:block;font-size:14px;font-weight:600;margin-bottom:8px;color:var(--text)}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+select,textarea,input{width:100%;padding:12px 14px;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:.2s}
+select:focus,textarea:focus{border-color:var(--accent)}
+textarea{min-height:160px;resize:vertical}
+.btn{padding:12px 28px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:.2s;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#081120}
+.btn:hover{filter:brightness(1.1)}
+.privacy{margin-top:20px;font-size:12px;color:var(--muted-2);line-height:1.6}
+.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);background:var(--ok);color:#081120;padding:12px 24px;border-radius:10px;font-weight:600;display:none;z-index:99}
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="/" class="← 返回官网">← 返回官网</a>
+  <div class="card">
+    <h1>反馈建议</h1>
+    <p class="sub">上报 bug、误报尽量选择对应分类，方便优先处理；闲聊内容选【其他】</p>
+    <div class="form-group">
+      <label>反馈分类</label>
+      <select id="type">
+        <option value="bug">Bug 上报</option>
+        <option value="false_positive">误报上报</option>
+        <option value="feature">功能建议</option>
+        <option value="other">其他（闲聊）</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>详细内容</label>
+      <textarea id="content" placeholder="请描述你遇到的问题/建议，越详细越好（比如版本号、操作步骤、报错截图描述）"></textarea>
+      <div class="hint">支持匿名提交，无需注册账号</div>
+    </div>
+    <button class="btn" onclick="submitFeedback()">提交反馈</button>
+    <p class="privacy">
+      隐私说明：登录GitHub后提交的反馈将同步到本仓库公开Issues，制作人回复后你会在右上角收到小红点提示，无需注册额外账号。
+    </p>
+  </div>
+</div>
+<div class="toast" id="toast">提交成功！感谢你的反馈</div>
+<script>
+function submitFeedback(){
+  const type = document.getElementById('type').value;
+  const content = document.getElementById('content').value.trim();
+  if(!content){alert('内容不能为空');return}
+  fetch('https://formspree.io/f/xoqyzkwv', {
+    method:'POST',
+    headers:{'Content-Type':'application/json', 'Accept':'application/json'},
+    body:JSON.stringify({
+      type: type,
+      content: content,
+      _replyto: 'anonymous@dg.local'
+    })
+  }).then(r=>{
+    if(r.ok){
+      document.getElementById('toast').textContent = '提交成功！制作人会尽快处理';
+      document.getElementById('toast').style.display='block';
+      setTimeout(()=>{document.getElementById('toast').style.display='none';document.getElementById('content').value=''},2000);
+    } else {alert('提交失败，请稍后再试')}
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "latest_version": "6.6.0",
+  "version": "6.6.0",
+  "release_date": "2026-11-05",
+  "release_notes": "6.6.0 内容更新（三大安全模块升级：壳检测分级·文件风暴2.0·程序联网监控）：1.【文件封包检测2.0】PE启发式壳特征库从单一库拆分为高/中/低危三级——UPX/ASPack等通用壳低危+4分、VMProtect/Themida等加壳保护壳中危+7分、自定义壳/未知壳高危+10分，同时将原平均熵检测细化为「高熵节数量+最高熵+高熵占比」三维度，加壳识别更精准、系统exe零误报；2.【文件风暴2.0】原全局滑动窗口计数改为按目录分组计数——只有某个特定目录在3秒窗口内新增文件超过30次才判定为风暴，解压/安装跨目录批量写文件再也不会误报，新增目录级去重和内存自动清理；3.【程序联网行为监控】全新模块——每3秒枚举系统TCP连接快照，对比前后差异发现新的出站连接立即告警（显示进程名+PID+目标IP/端口），内置白名单（系统进程/浏览器/常用社交软件默认不告警），设置页新增独立开关（默认开启，配置持久化）；4.【设置保存bug修复】save_config此前保存失败静默吞异常，改为写入错误日志方便排查；5.全程纯用户态、零驱动、不服务化、CPU≈0",
+  "features": [
+    "文件封包检测2.0：壳特征分三级（高/中/低危），UPX/VMProtect/Themida/ASPack等常见壳精准识别，熵检测细化为三维度",
+    "文件风暴2.0：按目录分组计数，3秒单目录30次才告警，解压/安装不再误报",
+    "程序联网监控：新出站连接实时告警（进程+PID+IP/端口），内置白名单，纯用户态轻量运行",
+    "设置页新增联网监控开关，配置持久化",
+    "全程纯用户态、零驱动、不服务化、CPU≈0"
+  ],
+  "pkg": "https://github.com/kittyguard/kittyguard/releases/download/v6.6.0/DG-Security-Setup-6.6.0.exe",
+  "pkg_gh": "https://github.com/kittyguard/kittyguard/releases/download/v6.6.0/DG-Security_6.6.0.zip",
+  "pkg_gt": "https://gitee.com/kittyguard/kittyguard/releases/download/v6.6.0/DG-Security_6.6.0.zip",
+  "setup_gh": "https://github.com/kittyguard/kittyguard/releases/download/v6.6.0/DG-Security-Setup-6.6.0.exe",
+  "setup_gt": "https://gitee.com/kittyguard/kittyguard/releases/download/v6.6.0/DG-Security-Setup-6.6.0.exe",
+  "sha256": "A19DD83886228FEA29618E812267AC2B369BA702173C5847B01D5170ACEEEE84"
+}
+
+
